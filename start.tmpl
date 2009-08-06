@@ -1,0 +1,3 @@
+#for $sid, $clientport, $port1, $port2 in $serverlist
+java -cp log4j.jar:zookeeper.jar:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./s$sid/zoo.cfg &> ./s$sid/zoo.log &
+#end for
