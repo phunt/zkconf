@@ -1,0 +1,43 @@
+h1. Generate configuration for ZooKeeper ensemble
+
+http://hadoop.apache.org/zookeeper/
+
+h2. Summary
+
+zkconf.py will generate all of the configuration needed to run a ZooKeeper ensemble. Currently the assumption is that this tool will mainly be used to do testing, therefore the conf files are using localhost for all servers.
+
+h2. Requirements
+
+* Python
+* Cheetah templating package are necessary to run this
+** On ubuntu "sudo apt-get install python-cheetah"
+
+before using the first time (or on update) run the following command
+
+cheetah compile *.tmpl
+
+h2. Usage
+
+zkconf.py [options] zookeeper_trunk_dir
+
+example: zkconf.py --count 9 ~/zookeeper_trunk
+
+typically you want to create a new subdir, cd into that subdir, then run zkconf.py -- why? because the generated dirs/files are output the the current directory
+
+Options:
+  -h, --help            show this help message and exit
+  -c COUNT, --count=COUNT
+                        ensemble size
+  --clientportstart=CLIENTPORTSTART
+                        first client port
+  --quorumportstart=QUORUMPORTSTART
+                        first quorum port
+  --electionportstart=ELECTIONPORTSTART
+                        first election port
+
+where zookeeper_trunk_dir is the location of your zookeeper trunk - necessary as the source for jars/conf files
+
+start.sh - start the ensemble (logs are output to the respective server subdir)
+stop.sh - stop the ensemble
+cli.sh "server:port,server:port,..." - open a client to the server list
+
