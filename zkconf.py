@@ -28,13 +28,13 @@ if len(args) != 1:
 
 if __name__ == '__main__':
     serverlist = []
-    for sid in xrange(1, options.count + 1) :
+    for sid in xrange(1, int(options.count) + 1) :
         serverlist.append([sid,
                            options.clientportstart + sid,
                            options.quorumportstart + sid,
                            options.electionportstart + sid])
 
-    for sid in xrange(1, options.count + 1) :
+    for sid in xrange(1, int(options.count) + 1) :
         serverdir = "s" + str(sid)
         os.mkdir(serverdir)
         os.mkdir(os.path.join(serverdir, "data"))
