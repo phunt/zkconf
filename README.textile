@@ -20,7 +20,13 @@ h2. Usage
 
 zkconf.py [options] zookeeper_trunk_dir
 
-example: zkconf.py --count 9 ~/zookeeper_trunk
+example of typical use; 9 server quorum:
+
+bq. zkconf.py --count 9 ~/zookeeper_trunk
+
+example of using weights/groups (only for flex quorum, not typical); 9 servers with 3 groups
+
+bq. zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk
 
 typically you want to create a new subdir, cd into that subdir, then run zkconf.py -- why? because the generated dirs/files are output the the current directory
 
@@ -34,6 +40,9 @@ Options:
                         first quorum port
   --electionportstart=ELECTIONPORTSTART
                         first election port
+  --weights=WEIGHTS     comma separated list of weights for each server (flex
+                        quorum only)
+  --groups=GROUPS       comma separated list of groups (flex quorum only)
 
 where zookeeper_trunk_dir is the location of your zookeeper trunk - necessary as the source for jars/conf files
 
