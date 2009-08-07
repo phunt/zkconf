@@ -10,7 +10,7 @@ from zoocfg import zoocfg
 from start import start
 from stop import stop
 
-usage = "usage: %prog [options] zookeeper_trunk_dir"
+usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
 parser.add_option("-c", "--count", dest="count",
                   default="3", help="ensemble size")
@@ -42,10 +42,12 @@ if options.groups != "1" :
 else :
     options.groups = []
 
-if len(args) != 1:
-    parser.error("need zookeeper_trunk_dir in order to get jars and conf")
+if len(args) != 2:
+    parser.error("need zookeeper_dir in order to get jars/conf, and output_dir for where to put generated")
 
 if __name__ == '__main__':
+    os.mkdir(args[1])
+
     serverlist = []
     for sid in xrange(1, options.count + 1) :
         serverlist.append([sid,
@@ -54,7 +56,7 @@ if __name__ == '__main__':
                            options.electionportstart + sid])
 
     for sid in xrange(1, options.count + 1) :
-        serverdir = "s" + str(sid)
+        serverdir = os.path.join(args[1], "s" + str(sid))
         os.mkdir(serverdir)
         os.mkdir(os.path.join(serverdir, "data"))
         conf = zoocfg(searchList=[{'sid' : sid,
@@ -70,21 +72,24 @@ if __name__ == '__main__':
         f.write(str(sid))
         f.close()
 
-    f = open("start.sh", 'w')
+    startcmd = os.path.join(args[1], "start.sh")
+    f = open(startcmd, 'w')
     f.write(str(start(searchList=[{'serverlist' : serverlist}])))
     f.close()
-    os.chmod("start.sh", 0755)
+    os.chmod(startcmd, 0755)
 
-    f = open("stop.sh", 'w')
+    stopcmd = os.path.join(args[1], "stop.sh")
+    f = open(stopcmd, 'w')
     f.write(str(stop(searchList=[{'serverlist' : serverlist}])))
     f.close()
-    os.chmod("stop.sh", 0755)
+    os.chmod(stopcmd, 0755)
 
-    shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), "log4j.jar")
-    shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), "log4j.properties")
-    shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), "zookeeper.jar")
+    shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
+    shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
+    shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
 
-    f = open("cli.sh", 'w')
+    clicmd = os.path.join(args[1], "cli.sh")
+    f = open(clicmd, 'w')
     f.write('java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server $1')
     f.close()
-    os.chmod("cli.sh", 0755)
+    os.chmod(clicmd, 0755)

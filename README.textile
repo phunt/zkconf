@@ -1,6 +1,6 @@
 h1. Generate configuration for ZooKeeper ensemble
 
-http://hadoop.apache.org/zookeeper/
+"http://hadoop.apache.org/zookeeper/":http://hadoop.apache.org/zookeeper/
 
 h2. Summary
 
@@ -9,7 +9,7 @@ zkconf.py will generate all of the configuration needed to run a ZooKeeper ensem
 h2. Requirements
 
 * Python
-* Cheetah templating package are necessary to run this
+* "Cheetah":http://www.cheetahtemplate.org templating package are necessary to run this
 ** On ubuntu "sudo apt-get install python-cheetah"
 
 before using the first time (or on update) run the following command
@@ -18,17 +18,17 @@ cheetah compile *.tmpl
 
 h2. Usage
 
-zkconf.py [options] zookeeper_trunk_dir
+zkconf.py [options] zookeeper_dir output_dir
+
+Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the jars/confs from this directory into the output_dir to make your life easier). And output_dir is the directory to which we will output the generated files (assumption is that this is a non-existent directory - ie zkconf will create it)
 
 example of typical use; 9 server quorum:
 
-bq. zkconf.py --count 9 ~/zookeeper_trunk
+bq. zkconf.py --count 9 ~/zookeeper_trunk test9servers
 
 example of using weights/groups (only for flex quorum, not typical); 9 servers with 3 groups
 
-bq. zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk
-
-typically you want to create a new subdir, cd into that subdir, then run zkconf.py -- why? because the generated dirs/files are output the the current directory
+bq. zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk testflexquroum
 
 Options:
   -h, --help            show this help message and exit
@@ -43,8 +43,6 @@ Options:
   --weights=WEIGHTS     comma separated list of weights for each server (flex
                         quorum only)
   --groups=GROUPS       comma separated list of groups (flex quorum only)
-
-where zookeeper_trunk_dir is the location of your zookeeper trunk - necessary as the source for jars/conf files
 
 start.sh - start the ensemble (logs are output to the respective server subdir)
 stop.sh - stop the ensemble
