@@ -14,6 +14,8 @@ usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
 parser.add_option("-c", "--count", dest="count",
                   default="3", help="ensemble size")
+parser.add_option("", "--servers", dest="servers",
+                  default="localhost", help="explicit list of comma separated server names (alternative to --count)")
 parser.add_option("", "--clientportstart", dest="clientportstart",
                   default="2180", help="first client port")
 parser.add_option("", "--quorumportstart", dest="quorumportstart",
@@ -27,10 +29,16 @@ parser.add_option("", "--groups", dest="groups",
 
 (options, args) = parser.parse_args()
 
-options.count = int(options.count)
 options.clientportstart = int(options.clientportstart)
 options.quorumportstart = int(options.quorumportstart)
 options.electionportstart = int(options.electionportstart)
+
+if options.servers != "localhost" :
+    options.servers = options.servers.split(",")
+else :
+    options.servers = []
+    for i in xrange(int(options.count)) :
+        options.servers.append('localhost');
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")
@@ -49,17 +57,20 @@ if __name__ == '__main__':
     os.mkdir(args[1])
 
     serverlist = []
-    for sid in xrange(1, options.count + 1) :
+    for sid in xrange(1, len(options.servers) + 1) :
         serverlist.append([sid,
+                           options.servers[sid - 1],
                            options.clientportstart + sid,
                            options.quorumportstart + sid,
                            options.electionportstart + sid])
 
-    for sid in xrange(1, options.count + 1) :
-        serverdir = os.path.join(args[1], "s" + str(sid))
+    for sid in xrange(1, len(options.servers) + 1) :
+        serverdir = os.path.join(args[1], options.servers[sid - 1] +
+                                 ":" + str(options.clientportstart + sid))
         os.mkdir(serverdir)
         os.mkdir(os.path.join(serverdir, "data"))
         conf = zoocfg(searchList=[{'sid' : sid,
+                                   'servername' : options.servers[sid - 1],
                                    'clientPort' :
                                        options.clientportstart + sid,
                                    'weights' : options.weights,
@@ -96,9 +107,11 @@ if __name__ == '__main__':
 
     statuscmd = os.path.join(args[1], "status.sh")
     f = open(statuscmd, 'w')
-    for sid in xrange(1, options.count + 1) :
-        f.write('echo -n "s' + str(sid) + ' "' +
-                ';echo stat | nc localhost ' + str(options.clientportstart + sid) +
+    for sid in xrange(1, len(options.servers) + 1) :
+        f.write('echo -n "' + options.servers[sid - 1] +
+                ":" + str(options.clientportstart + sid) + ' "' +
+                ';echo stat | nc ' + options.servers[sid - 1] +
+                " " + str(options.clientportstart + sid) +
                 ' | egrep "Mode: "\n')
     f.close()
     os.chmod(statuscmd, 0755)

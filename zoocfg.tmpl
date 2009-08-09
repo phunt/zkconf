@@ -1,16 +1,16 @@
 tickTime=2000
 initLimit=10
 syncLimit=5
-dataDir=./s$sid/data
+dataDir=./$servername:$clientPort/data
 clientPort=$clientPort
 electionAlg=3
 
-#for $sid, $clientport, $port1, $port2 in $serverlist
-server.$sid=localhost:$port1:$port2
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+server.$sid=$servername:$port1:$port2
 #end for
 
 #if len($weights) > 0
-#for $sid, $clientport, $port1, $port2 in $serverlist
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
 weight.$sid=$weights[$sid - 1]
 #end for
 #end if
