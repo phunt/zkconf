@@ -47,4 +47,5 @@ Options:
 start.sh - start the ensemble (logs are output to the respective server subdir)
 stop.sh - stop the ensemble
 cli.sh "server:port,server:port,..." - open a client to the server list
+status.sh - status of each of the servers (prints leader | follower if active)
 

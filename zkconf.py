@@ -93,3 +93,13 @@ if __name__ == '__main__':
     f.write('java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server $1')
     f.close()
     os.chmod(clicmd, 0755)
+
+    statuscmd = os.path.join(args[1], "status.sh")
+    f = open(statuscmd, 'w')
+    for sid in xrange(1, options.count + 1) :
+        f.write('echo -n "s' + str(sid) + ' "' +
+                ';echo stat | nc localhost ' + str(options.clientportstart + sid) +
+                ' | egrep "Mode: "\n')
+    f.close()
+    os.chmod(statuscmd, 0755)
+
