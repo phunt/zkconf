@@ -101,12 +101,14 @@ if __name__ == '__main__':
 
     clicmd = os.path.join(args[1], "cli.sh")
     f = open(clicmd, 'w')
-    f.write('java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server $1')
+    f.write('#!/bin/sh\n')
+    f.write('java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server $1\n')
     f.close()
     os.chmod(clicmd, 0755)
 
     statuscmd = os.path.join(args[1], "status.sh")
     f = open(statuscmd, 'w')
+    f.write('#!/bin/sh\n')
     for sid in xrange(1, len(options.servers) + 1) :
         f.write('echo -n "' + options.servers[sid - 1] +
                 ":" + str(options.clientportstart + sid) + ' "' +
