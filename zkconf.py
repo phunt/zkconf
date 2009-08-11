@@ -53,6 +53,16 @@ else :
 if len(args) != 2:
     parser.error("need zookeeper_dir in order to get jars/conf, and output_dir for where to put generated")
 
+def writefile(p, content):
+    f = open(p, 'w')
+    f.write(content)
+    f.close()
+
+def writescript(name, content):
+    p = os.path.join(args[1], name)
+    writefile(p, content)
+    os.chmod(p, 0755)
+
 if __name__ == '__main__':
     os.mkdir(args[1])
 
@@ -76,45 +86,25 @@ if __name__ == '__main__':
                                    'weights' : options.weights,
                                    'groups' : options.groups,
                                    'serverlist' : serverlist}])
-        f = open(os.path.join(serverdir, "zoo.cfg"), 'w')
-        f.write(str(conf))
-        f.close()
-        f = open(os.path.join(serverdir, "data", "myid"), 'w')
-        f.write(str(sid))
-        f.close()
+        writefile(os.path.join(serverdir, "zoo.cfg"), str(conf))
+        writefile(os.path.join(serverdir, "data", "myid"), str(sid))
 
-    startcmd = os.path.join(args[1], "start.sh")
-    f = open(startcmd, 'w')
-    f.write(str(start(searchList=[{'serverlist' : serverlist}])))
-    f.close()
-    os.chmod(startcmd, 0755)
+    writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist}])))
+    writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
 
-    stopcmd = os.path.join(args[1], "stop.sh")
-    f = open(stopcmd, 'w')
-    f.write(str(stop(searchList=[{'serverlist' : serverlist}])))
-    f.close()
-    os.chmod(stopcmd, 0755)
+    content = """#!/bin/sh
+java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
+    writescript("cli.sh", content)
+
+    content = '#!/bin/sh\n'
+    for sid in xrange(1, len(options.servers) + 1) :
+        content += ('echo -n "' + options.servers[sid - 1] +
+                    ":" + str(options.clientportstart + sid) + ' "' +
+                    ';echo stat | nc ' + options.servers[sid - 1] +
+                    " " + str(options.clientportstart + sid) +
+                    ' | egrep "Mode: "\n')
+    writescript("status.sh", content)
 
     shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
     shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
     shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
-
-    clicmd = os.path.join(args[1], "cli.sh")
-    f = open(clicmd, 'w')
-    f.write('#!/bin/sh\n')
-    f.write('java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server $1\n')
-    f.close()
-    os.chmod(clicmd, 0755)
-
-    statuscmd = os.path.join(args[1], "status.sh")
-    f = open(statuscmd, 'w')
-    f.write('#!/bin/sh\n')
-    for sid in xrange(1, len(options.servers) + 1) :
-        f.write('echo -n "' + options.servers[sid - 1] +
-                ":" + str(options.clientportstart + sid) + ' "' +
-                ';echo stat | nc ' + options.servers[sid - 1] +
-                " " + str(options.clientportstart + sid) +
-                ' | egrep "Mode: "\n')
-    f.close()
-    os.chmod(statuscmd, 0755)
-
