@@ -33,12 +33,22 @@ options.clientportstart = int(options.clientportstart)
 options.quorumportstart = int(options.quorumportstart)
 options.electionportstart = int(options.electionportstart)
 
+options.clientports = []
+options.quorumports = []
+options.electionports = []
 if options.servers != "localhost" :
     options.servers = options.servers.split(",")
+    for i in xrange(1, len(options.servers) + 1) :
+        options.clientports.append(options.clientportstart + 1);
+        options.quorumports.append(options.quorumportstart + 1);
+        options.electionports.append(options.electionportstart + 1);
 else :
     options.servers = []
     for i in xrange(int(options.count)) :
         options.servers.append('localhost');
+        options.clientports.append(options.clientportstart + i + 1);
+        options.quorumports.append(options.quorumportstart + i + 1);
+        options.electionports.append(options.electionportstart + i + 1);
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")
@@ -70,19 +80,19 @@ if __name__ == '__main__':
     for sid in xrange(1, len(options.servers) + 1) :
         serverlist.append([sid,
                            options.servers[sid - 1],
-                           options.clientportstart + sid,
-                           options.quorumportstart + sid,
-                           options.electionportstart + sid])
+                           options.clientports[sid - 1],
+                           options.quorumports[sid - 1],
+                           options.electionports[sid - 1]])
 
     for sid in xrange(1, len(options.servers) + 1) :
         serverdir = os.path.join(args[1], options.servers[sid - 1] +
-                                 ":" + str(options.clientportstart + sid))
+                                 ":" + str(options.clientports[sid - 1]))
         os.mkdir(serverdir)
         os.mkdir(os.path.join(serverdir, "data"))
         conf = zoocfg(searchList=[{'sid' : sid,
                                    'servername' : options.servers[sid - 1],
                                    'clientPort' :
-                                       options.clientportstart + sid,
+                                       options.clientports[sid - 1],
                                    'weights' : options.weights,
                                    'groups' : options.groups,
                                    'serverlist' : serverlist}])
@@ -99,9 +109,9 @@ java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$
     content = '#!/bin/sh\n'
     for sid in xrange(1, len(options.servers) + 1) :
         content += ('echo -n "' + options.servers[sid - 1] +
-                    ":" + str(options.clientportstart + sid) + ' "' +
+                    ":" + str(options.clientports[sid - 1]) + ' "' +
                     ';echo stat | nc ' + options.servers[sid - 1] +
-                    " " + str(options.clientportstart + sid) +
+                    " " + str(options.clientports[sid - 1]) +
                     ' | egrep "Mode: "\n')
     writescript("status.sh", content)
 

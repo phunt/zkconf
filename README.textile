@@ -36,6 +36,8 @@ Options:
   -h, --help            show this help message and exit
   -c COUNT, --count=COUNT
                         ensemble size
+  --servers=SERVERS     explicit list of comma separated server names
+                        (alternative to --count)
   --clientportstart=CLIENTPORTSTART
                         first client port
   --quorumportstart=QUORUMPORTSTART
@@ -45,6 +47,8 @@ Options:
   --weights=WEIGHTS     comma separated list of weights for each server (flex
                         quorum only)
   --groups=GROUPS       comma separated list of groups (flex quorum only)
+
+Running localhost (default) starts client:quorum:election ports as 2181:3181:4181 respectively. Running non-localhost (--servers) starts client:quorum:elections ports for all hosts as 2181:3181:4181.
 
 * cli.sh "server:port,server:port,..." - open a client to the server list
 * status.sh - status of each of the servers (prints leader | follower if active)
