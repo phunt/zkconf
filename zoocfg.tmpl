@@ -3,7 +3,14 @@ initLimit=10
 syncLimit=5
 dataDir=./$servername:$clientPort/data
 clientPort=$clientPort
-electionAlg=3
+
+#if $maxClientCnxns != 10
+maxClientCnxns=$maxClientCnxns
+#end if
+
+#if $electionAlg != 3
+electionAlg=$electionAlg
+#end if
 
 #for $sid, $servername, $clientport, $port1, $port2 in $serverlist
 server.$sid=$servername:$port1:$port2

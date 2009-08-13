@@ -26,6 +26,10 @@ parser.add_option("", "--weights", dest="weights",
                   default="1", help="comma separated list of weights for each server (flex quorum only)")
 parser.add_option("", "--groups", dest="groups",
                   default="1", help="comma separated list of groups (flex quorum only)")
+parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns",
+                  default="10", help="maxClientCnxns of server config")
+parser.add_option("", "--electionAlg", dest="electionalg",
+                  default="3", help="electionAlg of server config")
 
 (options, args) = parser.parse_args()
 
@@ -59,6 +63,9 @@ if options.groups != "1" :
     options.groups = options.groups.split(",")
 else :
     options.groups = []
+
+options.maxclientcnxns = int(options.maxclientcnxns)
+options.electionalg = int(options.electionalg)
 
 if len(args) != 2:
     parser.error("need zookeeper_dir in order to get jars/conf, and output_dir for where to put generated")
@@ -95,7 +102,9 @@ if __name__ == '__main__':
                                        options.clientports[sid - 1],
                                    'weights' : options.weights,
                                    'groups' : options.groups,
-                                   'serverlist' : serverlist}])
+                                   'serverlist' : serverlist,
+                                   'maxClientCnxns' : options.maxclientcnxns,
+                                   'electionAlg' : options.electionalg}])
         writefile(os.path.join(serverdir, "zoo.cfg"), str(conf))
         writefile(os.path.join(serverdir, "data", "myid"), str(sid))
 

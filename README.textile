@@ -47,6 +47,10 @@ Options:
   --weights=WEIGHTS     comma separated list of weights for each server (flex
                         quorum only)
   --groups=GROUPS       comma separated list of groups (flex quorum only)
+  --maxClientCnxns=MAXCLIENTCNXNS
+                        maxClientCnxns of server config
+  --electionAlg=ELECTIONALG
+                        electionAlg of server config
 
 Running localhost (default) starts client:quorum:election ports as 2181:3181:4181 respectively. Running non-localhost (--servers) starts client:quorum:elections ports for all hosts as 2181:3181:4181.
 
