@@ -4,7 +4,7 @@ h1. Generate configuration for ZooKeeper ensemble
 
 h2. Summary
 
-zkconf.py will generate all of the configuration needed to run a ZooKeeper ensemble. Currently the assumption is that this tool will mainly be used to do testing, therefore the conf files are using localhost for all servers.
+zkconf.py will generate all of the configuration needed to run a ZooKeeper ensemble. I mainly use this tool for localhost based testing, but it can generate configurations for any list of servers (see the --server option).
 
 h2. Requirements
 
