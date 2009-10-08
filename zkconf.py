@@ -4,6 +4,8 @@
 
 import os
 import shutil
+import glob
+
 from optparse import OptionParser
 
 from zoocfg import zoocfg
@@ -124,6 +126,23 @@ java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$
                     ' | egrep "Mode: "\n')
     writescript("status.sh", content)
 
-    shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
+    try:
+        shutil.copyfile(os.path.join(args[0], "build", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
+    except:
+        try:
+            shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
+        except:
+            print("unable to find log4j jar in %s" % (args[0]))
+            exit(1)
+
     shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
-    shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
+
+    try:
+        jars = glob.glob(os.path.join(args[0], "build", "zookeeper-[0-9].[0-9].[0-9].jar"))
+        shutil.copyfile(jars[0], os.path.join(args[1], "zookeeper.jar"))
+    except:
+        try:
+            shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
+        except:
+            print("unable to find zookeeper jar in %s" % (args[0]))
+            exit(1)
