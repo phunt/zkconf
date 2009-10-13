@@ -1,5 +1,21 @@
 #!/usr/bin/env python
 
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 ## requires use of Cheetah "sudo apt-get install python-cheetah"
 
 import os
@@ -14,30 +30,26 @@ from stop import stop
 
 usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
-parser.add_option("-c", "--count", dest="count",
-                  default="3", help="ensemble size")
+parser.add_option("-c", "--count", dest="count", type="int",
+                  default=3, help="ensemble size")
 parser.add_option("", "--servers", dest="servers",
                   default="localhost", help="explicit list of comma separated server names (alternative to --count)")
-parser.add_option("", "--clientportstart", dest="clientportstart",
-                  default="2180", help="first client port")
-parser.add_option("", "--quorumportstart", dest="quorumportstart",
-                  default="3180", help="first quorum port")
-parser.add_option("", "--electionportstart", dest="electionportstart",
-                  default="4180", help="first election port")
+parser.add_option("", "--clientportstart", dest="clientportstart", type="int",
+                  default=2180, help="first client port")
+parser.add_option("", "--quorumportstart", dest="quorumportstart", type="int",
+                  default=3180, help="first quorum port")
+parser.add_option("", "--electionportstart", dest="electionportstart", type="int",
+                  default=4180, help="first election port")
 parser.add_option("", "--weights", dest="weights",
                   default="1", help="comma separated list of weights for each server (flex quorum only)")
 parser.add_option("", "--groups", dest="groups",
                   default="1", help="comma separated list of groups (flex quorum only)")
-parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns",
-                  default="10", help="maxClientCnxns of server config")
-parser.add_option("", "--electionAlg", dest="electionalg",
-                  default="3", help="electionAlg of server config")
+parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns", type='int',
+                  default=10, help="maxClientCnxns of server config")
+parser.add_option("", "--electionAlg", dest="electionalg", type='int',
+                  default=3, help="electionAlg of server config")
 
 (options, args) = parser.parse_args()
-
-options.clientportstart = int(options.clientportstart)
-options.quorumportstart = int(options.quorumportstart)
-options.electionportstart = int(options.electionportstart)
 
 options.clientports = []
 options.quorumports = []
@@ -50,7 +62,7 @@ if options.servers != "localhost" :
         options.electionports.append(options.electionportstart + 1);
 else :
     options.servers = []
-    for i in xrange(int(options.count)) :
+    for i in xrange(options.count) :
         options.servers.append('localhost');
         options.clientports.append(options.clientportstart + i + 1);
         options.quorumports.append(options.quorumportstart + i + 1);
@@ -65,9 +77,6 @@ if options.groups != "1" :
     options.groups = options.groups.split(",")
 else :
     options.groups = []
-
-options.maxclientcnxns = int(options.maxclientcnxns)
-options.electionalg = int(options.electionalg)
 
 if len(args) != 2:
     parser.error("need zookeeper_dir in order to get jars/conf, and output_dir for where to put generated")
@@ -138,11 +147,15 @@ java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$
     shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
 
     try:
-        jars = glob.glob(os.path.join(args[0], "build", "zookeeper-[0-9].[0-9].[0-9].jar"))
+        jars = glob.glob(os.path.join(args[0], "zookeeper-[0-9].[0-9].[0-9].jar"))
         shutil.copyfile(jars[0], os.path.join(args[1], "zookeeper.jar"))
     except:
         try:
-            shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
+            jars = glob.glob(os.path.join(args[0], "build", "zookeeper-[0-9].[0-9].[0-9].jar"))
+            shutil.copyfile(jars[0], os.path.join(args[1], "zookeeper.jar"))
         except:
-            print("unable to find zookeeper jar in %s" % (args[0]))
-            exit(1)
+            try:
+                shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
+            except:
+                print("unable to find zookeeper jar in %s" % (args[0]))
+                exit(1)
