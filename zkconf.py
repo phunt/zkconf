@@ -31,23 +31,23 @@ from stop import stop
 usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
 parser.add_option("-c", "--count", dest="count", type="int",
-                  default=3, help="ensemble size")
+                  default=3, help="ensemble size (default 3)")
 parser.add_option("", "--servers", dest="servers",
                   default="localhost", help="explicit list of comma separated server names (alternative to --count)")
 parser.add_option("", "--clientportstart", dest="clientportstart", type="int",
-                  default=2180, help="first client port")
+                  default=2181, help="first client port (default 2181)")
 parser.add_option("", "--quorumportstart", dest="quorumportstart", type="int",
-                  default=3180, help="first quorum port")
+                  default=3181, help="first quorum port (default 3181)")
 parser.add_option("", "--electionportstart", dest="electionportstart", type="int",
-                  default=4180, help="first election port")
+                  default=4181, help="first election port (default 4181)")
 parser.add_option("", "--weights", dest="weights",
-                  default="1", help="comma separated list of weights for each server (flex quorum only)")
+                  default="1", help="comma separated list of weights for each server (flex quorum only, default off)")
 parser.add_option("", "--groups", dest="groups",
-                  default="1", help="comma separated list of groups (flex quorum only)")
+                  default="1", help="comma separated list of groups (flex quorum only, default off)")
 parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns", type='int',
-                  default=10, help="maxClientCnxns of server config")
+                  default=10, help="maxClientCnxns of server config (default unspecified, ZK default)")
 parser.add_option("", "--electionAlg", dest="electionalg", type='int',
-                  default=3, help="electionAlg of server config")
+                  default=3, help="electionAlg of server config (default unspecified, ZK default - FLE)")
 
 (options, args) = parser.parse_args()
 
@@ -57,16 +57,16 @@ options.electionports = []
 if options.servers != "localhost" :
     options.servers = options.servers.split(",")
     for i in xrange(1, len(options.servers) + 1) :
-        options.clientports.append(options.clientportstart + 1);
-        options.quorumports.append(options.quorumportstart + 1);
-        options.electionports.append(options.electionportstart + 1);
+        options.clientports.append(options.clientportstart);
+        options.quorumports.append(options.quorumportstart);
+        options.electionports.append(options.electionportstart);
 else :
     options.servers = []
     for i in xrange(options.count) :
         options.servers.append('localhost');
-        options.clientports.append(options.clientportstart + i + 1);
-        options.quorumports.append(options.quorumportstart + i + 1);
-        options.electionports.append(options.electionportstart + i + 1);
+        options.clientports.append(options.clientportstart + i);
+        options.quorumports.append(options.quorumportstart + i);
+        options.electionports.append(options.electionportstart + i);
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")

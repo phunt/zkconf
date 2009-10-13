@@ -24,7 +24,32 @@ cheetah compile *.tmpl
 
 h2. Usage
 
-zkconf.py [options] zookeeper_dir output_dir
+<pre>
+Usage: zkconf.py [options] zookeeper_dir output_dir
+
+Options:
+  -h, --help            show this help message and exit
+  -c COUNT, --count=COUNT
+                        ensemble size (default 3)
+  --servers=SERVERS     explicit list of comma separated server names
+                        (alternative to --count)
+  --clientportstart=CLIENTPORTSTART
+                        first client port (default 2181)
+  --quorumportstart=QUORUMPORTSTART
+                        first quorum port (default 3181)
+  --electionportstart=ELECTIONPORTSTART
+                        first election port (default 4181)
+  --weights=WEIGHTS     comma separated list of weights for each server (flex
+                        quorum only, default off)
+  --groups=GROUPS       comma separated list of groups (flex quorum only,
+                        default off)
+  --maxClientCnxns=MAXCLIENTCNXNS
+                        maxClientCnxns of server config (default unspecified,
+                        ZK default)
+  --electionAlg=ELECTIONALG
+                        electionAlg of server config (default unspecified, ZK
+                        default - FLE)
+</pre>
 
 Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the jars/confs from this directory into the output_dir to make your life easier). And output_dir is the directory to which we will output the generated files (assumption is that this is a non-existent directory - ie zkconf will create it)
 
@@ -37,26 +62,6 @@ bq. zkconf.py --servers "host1.com,host2.com,168.1.1.1" ~/zookeeper_trunk test3s
 example of using weights/groups (only for flex quorum, not typical); 9 servers with 3 groups
 
 bq. zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk testflexquroum
-
-Options:
-  -h, --help            show this help message and exit
-  -c COUNT, --count=COUNT
-                        ensemble size
-  --servers=SERVERS     explicit list of comma separated server names
-                        (alternative to --count)
-  --clientportstart=CLIENTPORTSTART
-                        first client port
-  --quorumportstart=QUORUMPORTSTART
-                        first quorum port
-  --electionportstart=ELECTIONPORTSTART
-                        first election port
-  --weights=WEIGHTS     comma separated list of weights for each server (flex
-                        quorum only)
-  --groups=GROUPS       comma separated list of groups (flex quorum only)
-  --maxClientCnxns=MAXCLIENTCNXNS
-                        maxClientCnxns of server config
-  --electionAlg=ELECTIONALG
-                        electionAlg of server config
 
 Running localhost (default) starts client:quorum:election ports as 2181:3181:4181 respectively. Running non-localhost (--servers) starts client:quorum:elections ports for all hosts as 2181:3181:4181.
 
