@@ -91,6 +91,20 @@ def writescript(name, content):
     writefile(p, content)
     os.chmod(p, 0755)
 
+def copyjar(optional, srcs, jar, dstpath, dst):
+    for src in srcs:
+        try:
+            shutil.copyfile(glob.glob(os.path.join(os.path.join(*src), jar))[0],
+                            os.path.join(dstpath, dst))
+            return
+        except:
+            pass
+
+    if optional: return
+
+    print("unable to find %s in %s" % (dst, args[0]))
+    exit(1)
+
 if __name__ == '__main__':
     os.mkdir(args[1])
 
@@ -123,7 +137,7 @@ if __name__ == '__main__':
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
 
     content = """#!/bin/bash
-java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
+java -cp zookeeper.jar:log4j.jar:jline.jar:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
     writescript("cli.sh", content)
 
     content = '#!/bin/bash\n'
@@ -135,27 +149,25 @@ java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$
                     ' | egrep "Mode: ")\n')
     writescript("status.sh", content)
 
-    try:
-        shutil.copyfile(os.path.join(args[0], "build", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
-    except:
-        try:
-            shutil.copyfile(os.path.join(args[0], "src", "java", "lib", "log4j-1.2.15.jar"), os.path.join(args[1], "log4j.jar"))
-        except:
-            print("unable to find log4j jar in %s" % (args[0]))
-            exit(1)
+    copyjar(False,
+            [[args[0], "build", "lib"],
+             [args[0], "src", "java", "lib"],
+             [args[0], "lib"],
+             ],
+            "log4j-*.jar",
+            args[1], "log4j.jar")
+    copyjar(True,
+            [[args[0], "build", "lib"],
+             [args[0], "src", "java", "lib"],
+             [args[0], "lib"],
+             ],
+            "jline-*.jar",
+            args[1], "jline.jar")
+    copyjar(False,
+            [[args[0], "build"],
+             [args[0]],
+             ],
+            "zookeeper-[0-9].[0-9].[0-9].jar",
+            args[1], "zookeeper.jar")
 
     shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
-
-    try:
-        jars = glob.glob(os.path.join(args[0], "zookeeper-[0-9].[0-9].[0-9].jar"))
-        shutil.copyfile(jars[0], os.path.join(args[1], "zookeeper.jar"))
-    except:
-        try:
-            jars = glob.glob(os.path.join(args[0], "build", "zookeeper-[0-9].[0-9].[0-9].jar"))
-            shutil.copyfile(jars[0], os.path.join(args[1], "zookeeper.jar"))
-        except:
-            try:
-                shutil.copyfile(os.path.join(args[0], "zookeeper-dev.jar"), os.path.join(args[1], "zookeeper.jar"))
-            except:
-                print("unable to find zookeeper jar in %s" % (args[0]))
-                exit(1)
