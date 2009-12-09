@@ -1,5 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 #for $sid, $servername, $clientport, $port1, $port2 in $serverlist
-fuser -k -n tcp $clientport
+PIDFILE=./$servername:$clientport/zookeeper_server.pid
+
+if [ -e "\$PIDFILE" ]
+then
+    kill -9 \$(cat \$PIDFILE)
+    rm \$PIDFILE
+else
+    echo "Missing \$PIDFILE, not stopping respective server"
+fi
+
 #end for

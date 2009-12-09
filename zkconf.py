@@ -122,17 +122,17 @@ if __name__ == '__main__':
     writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist}])))
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
 
-    content = """#!/bin/sh
+    content = """#!/bin/bash
 java -cp zookeeper.jar:log4j.jar:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
     writescript("cli.sh", content)
 
-    content = '#!/bin/sh\n'
+    content = '#!/bin/bash\n'
     for sid in xrange(1, len(options.servers) + 1) :
-        content += ('echo -n "' + options.servers[sid - 1] +
+        content += ('echo "' + options.servers[sid - 1] +
                     ":" + str(options.clientports[sid - 1]) + ' "' +
-                    ';echo stat | nc ' + options.servers[sid - 1] +
+                    ' $(echo stat | nc ' + options.servers[sid - 1] +
                     " " + str(options.clientports[sid - 1]) +
-                    ' | egrep "Mode: "\n')
+                    ' | egrep "Mode: ")\n')
     writescript("status.sh", content)
 
     try:
