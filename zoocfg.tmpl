@@ -8,6 +8,7 @@ clientPort=$clientPort
 maxClientCnxns=$maxClientCnxns
 #end if
 
+#if len($serverlist) > 1
 #if $electionAlg != 3
 electionAlg=$electionAlg
 #end if
@@ -26,4 +27,5 @@ weight.$sid=$weights[$sid - 1]
 #for $i in xrange(1, len($groups) + 1)
 group.$i=$groups[$i - 1]
 #end for
+#end if
 #end if
