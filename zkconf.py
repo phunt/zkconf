@@ -137,37 +137,27 @@ if __name__ == '__main__':
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
 
     content = """#!/bin/bash
-java -cp zookeeper.jar:log4j.jar:jline.jar:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
+java -cp ./*:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
     writescript("cli.sh", content)
 
     content = '#!/bin/bash\n'
     for sid in xrange(1, len(options.servers) + 1) :
         content += ('echo "' + options.servers[sid - 1] +
                     ":" + str(options.clientports[sid - 1]) + ' "' +
-                    ' $(echo stat | nc ' + options.servers[sid - 1] +
+                    ' $(echo stat | nc -q 1 ' + options.servers[sid - 1] +
                     " " + str(options.clientports[sid - 1]) +
                     ' | egrep "Mode: ")\n')
     writescript("status.sh", content)
 
-    copyjar(False,
-            [[args[0], "build", "lib"],
-             [args[0], "src", "java", "lib"],
-             [args[0], "lib"],
-             ],
-            "log4j-*.jar",
-            args[1], "log4j.jar")
-    copyjar(True,
-            [[args[0], "build", "lib"],
-             [args[0], "src", "java", "lib"],
-             [args[0], "lib"],
-             ],
-            "jline-*.jar",
-            args[1], "jline.jar")
-    copyjar(False,
-            [[args[0], "build"],
-             [args[0]],
-             ],
-            "zookeeper-[0-9].[0-9].[0-9].jar",
-            args[1], "zookeeper.jar")
+    for f in glob.glob(os.path.join(args[0], 'lib', '*.jar')):
+        shutil.copy(f, args[1])
+    for f in glob.glob(os.path.join(args[0], 'src', 'java', 'lib', '*.jar')):
+        shutil.copy(f, args[1])
+    for f in glob.glob(os.path.join(args[0], 'build', 'lib', '*.jar')):
+        shutil.copy(f, args[1])
+    for f in glob.glob(os.path.join(args[0], '*.jar')):
+        shutil.copy(f, args[1])
+    for f in glob.glob(os.path.join(args[0], 'build', '*.jar')):
+        shutil.copy(f, args[1])
 
     shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
