@@ -21,6 +21,7 @@ h2. Requirements
 * Python
 * "Cheetah":http://www.cheetahtemplate.org templating package are necessary to run this
 ** On ubuntu "sudo apt-get install python-cheetah"
+* Bash
 
 before using the first time (or on update) run the following command
 

@@ -27,6 +27,7 @@ from optparse import OptionParser
 from zoocfg import zoocfg
 from start import start
 from stop import stop
+from status import status
 
 usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
@@ -135,19 +136,11 @@ if __name__ == '__main__':
 
     writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist}])))
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
+    writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
 
     content = """#!/bin/bash
 java -cp ./*:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
     writescript("cli.sh", content)
-
-    content = '#!/bin/bash\n'
-    for sid in xrange(1, len(options.servers) + 1) :
-        content += ('echo "' + options.servers[sid - 1] +
-                    ":" + str(options.clientports[sid - 1]) + ' "' +
-                    ' $(echo stat | nc -q 1 ' + options.servers[sid - 1] +
-                    " " + str(options.clientports[sid - 1]) +
-                    ' | egrep "Mode: ")\n')
-    writescript("status.sh", content)
 
     for f in glob.glob(os.path.join(args[0], 'lib', '*.jar')):
         shutil.copy(f, args[1])

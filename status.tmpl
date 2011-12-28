@@ -1,0 +1,17 @@
+#!/bin/bash
+
+function run4lw()
+{
+    exec 5<>/dev/tcp/\$2/\$3;echo \$1 >&5;cat <&5 | egrep "Mode: "
+}
+
+function srvr()
+{
+    run4lw srvr \$1 \$2 2> /dev/null
+}
+
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+
+echo "$servername:$clientport \$(srvr $servername $clientport)"
+
+#end for
