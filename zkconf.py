@@ -144,7 +144,7 @@ java -cp ./*:. org.apache.zookeeper.ZooKeeperMain -server "$1"\n"""
     for sid in xrange(1, len(options.servers) + 1) :
         content += ('echo "' + options.servers[sid - 1] +
                     ":" + str(options.clientports[sid - 1]) + ' "' +
-                    ' $(echo stat | nc -q 1 ' + options.servers[sid - 1] +
+                    ' $(echo stat | nc ' + options.servers[sid - 1] +
                     " " + str(options.clientports[sid - 1]) +
                     ' | egrep "Mode: ")\n')
     writescript("status.sh", content)
