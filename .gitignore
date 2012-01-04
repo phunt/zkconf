@@ -1,0 +1,6 @@
+*.bak
+*.pyc
+start.py
+status.py
+stop.py
+zoocfg.py
