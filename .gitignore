@@ -1,5 +1,6 @@
 *.bak
 *.pyc
+cli.py
 start.py
 status.py
 stop.py
