@@ -29,6 +29,9 @@ from start import start
 from stop import stop
 from status import status
 from cli import cli
+from copycat import copycat
+from startcat import startcat
+from stopcat import stopcat
 
 usage = "usage: %prog [options] zookeeper_dir output_dir"
 parser = OptionParser(usage=usage)
@@ -50,6 +53,8 @@ parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns", type='int',
                   default=10, help="maxClientCnxns of server config (default unspecified, ZK default)")
 parser.add_option("", "--electionAlg", dest="electionalg", type='int',
                   default=3, help="electionAlg of server config (default unspecified, ZK default - FLE)")
+parser.add_option("", "--username", dest="username",
+                  default="root", help="SSH username to login to servers for generating remote deployment scripts")
 
 (options, args) = parser.parse_args()
 
@@ -59,16 +64,16 @@ options.electionports = []
 if options.servers != "localhost" :
     options.servers = options.servers.split(",")
     for i in xrange(1, len(options.servers) + 1) :
-        options.clientports.append(options.clientportstart);
-        options.quorumports.append(options.quorumportstart);
-        options.electionports.append(options.electionportstart);
+        options.clientports.append(options.clientportstart)
+        options.quorumports.append(options.quorumportstart)
+        options.electionports.append(options.electionportstart)
 else :
     options.servers = []
     for i in xrange(options.count) :
-        options.servers.append('localhost');
-        options.clientports.append(options.clientportstart + i);
-        options.quorumports.append(options.quorumportstart + i);
-        options.electionports.append(options.electionportstart + i);
+        options.servers.append('localhost')
+        options.clientports.append(options.clientportstart + i)
+        options.quorumports.append(options.quorumportstart + i)
+        options.electionports.append(options.electionportstart + i)
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")
@@ -139,6 +144,10 @@ if __name__ == '__main__':
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
     writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
     writescript("cli.sh", str(cli()))
+    if options.servers != "localhost":
+        writescript("copycat.sh", str(copycat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
+        writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
+        writescript("stopcat.sh", str(stopcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
 
     for f in glob.glob(os.path.join(args[0], 'lib', '*.jar')):
         shutil.copy(f, args[1])

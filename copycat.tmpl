@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+ssh $username@$servername "mkdir -p zookeeper"
+scp -r ./$servername:$clientport log4j.properties *.jar $username@$servername:zookeeper/
+
+#end for

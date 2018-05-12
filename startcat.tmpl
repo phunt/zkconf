@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+ssh $username@$servername <<ENDSSH
+cd zookeeper
+if [ ! -f ./$servername:$clientport/zookeeper_server.pid ] ; then
+    java \$ZKCONF_START_ZKOPTS -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &
+    echo -n \\$! > ./$servername:$clientport/zookeeper_server.pid
+else
+    PID="\\$(cat ./$servername:$clientport/zookeeper_server.pid)"
+    echo "Server ./$servername:$clientport already started as PID \\${PID}"
+fi
+ENDSSH
+
+#end for
