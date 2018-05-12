@@ -79,7 +79,7 @@ Running localhost (default) starts client:quorum:election ports as 2181:3181:418
 
 h2. Running remotely
 
-If servers option is provided, zkconf will generate shell scripts which help you to upload ZooKeeper files and start/stop ensemble remotely. For example when you want to start a "real" ensemble running on separate machines / VMs. 
+If servers are listed in the command line, zkconf will generate shell scripts which help you to upload ZooKeeper files and start/stop ensemble remotely. For instance, you want to start a "real" ensemble running on separate machines / VMs. 
 
 bq. zkconf.py --servers "host1.com,host2.com,168.1.1.1" --username foobar ~/zookeeper_trunk test3servers
 
