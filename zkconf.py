@@ -21,8 +21,9 @@
 import os
 import shutil
 import glob
+import socket
 
-from optparse import OptionParser
+import argparse
 
 from zoocfg import zoocfg
 from start import start
@@ -32,36 +33,45 @@ from cli import cli
 from copycat import copycat
 from startcat import startcat
 from stopcat import stopcat
+from clearcat import clearcat
 
 usage = "usage: %prog [options] zookeeper_dir output_dir"
-parser = OptionParser(usage=usage)
-parser.add_option("-c", "--count", dest="count", type="int",
+parser = argparse.ArgumentParser(description="ZooKeeper ensemble config generator")
+parser.add_argument('zookeeper_dir', 
+                    help='ZooKeeper distribution directory')
+parser.add_argument('output_dir', 
+                    help='Output directory of generated files')
+parser.add_argument("-c", "--count", dest="count", type=int,
                   default=3, help="ensemble size (default 3)")
-parser.add_option("", "--servers", dest="servers",
+parser.add_argument("--servers", dest="servers",
                   default="localhost", help="explicit list of comma separated server names (alternative to --count)")
-parser.add_option("", "--clientportstart", dest="clientportstart", type="int",
+parser.add_argument("--clientportstart", dest="clientportstart", type=int,
                   default=2181, help="first client port (default 2181)")
-parser.add_option("", "--quorumportstart", dest="quorumportstart", type="int",
+parser.add_argument("--quorumportstart", dest="quorumportstart", type=int,
                   default=3181, help="first quorum port (default 3181)")
-parser.add_option("", "--electionportstart", dest="electionportstart", type="int",
+parser.add_argument("--electionportstart", dest="electionportstart", type=int,
                   default=4181, help="first election port (default 4181)")
-parser.add_option("", "--weights", dest="weights",
+parser.add_argument("--weights", dest="weights",
                   default="1", help="comma separated list of weights for each server (flex quorum only, default off)")
-parser.add_option("", "--groups", dest="groups",
+parser.add_argument("--groups", dest="groups",
                   default="1", help="comma separated list of groups (flex quorum only, default off)")
-parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns", type='int',
+parser.add_argument("--maxClientCnxns", dest="maxclientcnxns", type=int,
                   default=10, help="maxClientCnxns of server config (default unspecified, ZK default)")
-parser.add_option("", "--electionAlg", dest="electionalg", type='int',
+parser.add_argument("--electionAlg", dest="electionalg", type=int,
                   default=3, help="electionAlg of server config (default unspecified, ZK default - FLE)")
-parser.add_option("", "--username", dest="username",
+parser.add_argument("--username", dest="username",
+                  default="root", help="SSH username to login to servers for generating remote deployment scripts")
+parser.add_argument("--trace", dest="trace",
                   default="root", help="SSH username to login to servers for generating remote deployment scripts")
 
-(options, args) = parser.parse_args()
+options = parser.parse_args()
 
+is_remote = False
 options.clientports = []
 options.quorumports = []
 options.electionports = []
 if options.servers != "localhost" :
+    is_remote = True
     options.servers = options.servers.split(",")
     for i in xrange(1, len(options.servers) + 1) :
         options.clientports.append(options.clientportstart)
@@ -70,7 +80,7 @@ if options.servers != "localhost" :
 else :
     options.servers = []
     for i in xrange(options.count) :
-        options.servers.append('localhost')
+        options.servers.append(socket.gethostname())
         options.clientports.append(options.clientportstart + i)
         options.quorumports.append(options.quorumportstart + i)
         options.electionports.append(options.electionportstart + i)
@@ -85,16 +95,13 @@ if options.groups != "1" :
 else :
     options.groups = []
 
-if len(args) != 2:
-    parser.error("need zookeeper_dir in order to get jars/conf, and output_dir for where to put generated")
-
 def writefile(p, content):
     f = open(p, 'w')
     f.write(content)
     f.close()
 
 def writescript(name, content):
-    p = os.path.join(args[1], name)
+    p = os.path.join(options.output_dir, name)
     writefile(p, content)
     os.chmod(p, 0755)
 
@@ -113,7 +120,7 @@ def copyjar(optional, srcs, jar, dstpath, dst):
     exit(1)
 
 if __name__ == '__main__':
-    os.mkdir(args[1])
+    os.mkdir(options.output_dir)
 
     serverlist = []
     for sid in xrange(1, len(options.servers) + 1) :
@@ -124,7 +131,7 @@ if __name__ == '__main__':
                            options.electionports[sid - 1]])
 
     for sid in xrange(1, len(options.servers) + 1) :
-        serverdir = os.path.join(args[1], options.servers[sid - 1] +
+        serverdir = os.path.join(options.output_dir, options.servers[sid - 1] +
                                  ":" + str(options.clientports[sid - 1]))
         os.mkdir(serverdir)
         os.mkdir(os.path.join(serverdir, "data"))
@@ -144,20 +151,21 @@ if __name__ == '__main__':
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
     writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
     writescript("cli.sh", str(cli()))
-    if options.servers != "localhost":
+    if is_remote:
         writescript("copycat.sh", str(copycat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
         writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
         writescript("stopcat.sh", str(stopcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
+        writescript("clearcat.sh", str(clearcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
 
-    for f in glob.glob(os.path.join(args[0], 'lib', '*.jar')):
-        shutil.copy(f, args[1])
-    for f in glob.glob(os.path.join(args[0], 'src', 'java', 'lib', '*.jar')):
-        shutil.copy(f, args[1])
-    for f in glob.glob(os.path.join(args[0], 'build', 'lib', '*.jar')):
-        shutil.copy(f, args[1])
-    for f in glob.glob(os.path.join(args[0], '*.jar')):
-        shutil.copy(f, args[1])
-    for f in glob.glob(os.path.join(args[0], 'build', '*.jar')):
-        shutil.copy(f, args[1])
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'lib', '*.jar')):
+        shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'src', 'java', 'lib', '*.jar')):
+        shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'build', 'lib', '*.jar')):
+        shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, '*.jar')):
+        shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'build', '*.jar')):
+        shutil.copy(f, options.output_dir)
 
-    shutil.copyfile(os.path.join(args[0], "conf", "log4j.properties"), os.path.join(args[1], "log4j.properties"))
+    shutil.copyfile(os.path.join(options.zookeeper_dir, "conf", "log4j.properties"), os.path.join(options.output_dir, "log4j.properties"))
