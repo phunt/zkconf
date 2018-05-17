@@ -61,8 +61,10 @@ parser.add_argument("--electionAlg", dest="electionalg", type=int,
                   default=3, help="electionAlg of server config (default unspecified, ZK default - FLE)")
 parser.add_argument("--username", dest="username",
                   default="root", help="SSH username to login to servers for generating remote deployment scripts")
-parser.add_argument("--trace", dest="trace",
-                  default="root", help="SSH username to login to servers for generating remote deployment scripts")
+parser.add_argument("--trace", dest="trace", action="store_true",
+                  help="Enable trace level logging to separate log file")
+parser.add_argument("--ssl", dest="ssl", action="store_true",
+                  help="Enable SSL support (both client-server and server-server)")
 
 options = parser.parse_args()
 
@@ -116,7 +118,7 @@ def copyjar(optional, srcs, jar, dstpath, dst):
 
     if optional: return
 
-    print("unable to find %s in %s" % (dst, args[0]))
+    print("unable to find %s in %s" % (dst, options.zookeeper_dir))
     exit(1)
 
 if __name__ == '__main__':
@@ -143,11 +145,12 @@ if __name__ == '__main__':
                                    'groups' : options.groups,
                                    'serverlist' : serverlist,
                                    'maxClientCnxns' : options.maxclientcnxns,
-                                   'electionAlg' : options.electionalg}])
+                                   'electionAlg' : options.electionalg,
+                                   'ssl' : options.ssl}])
         writefile(os.path.join(serverdir, "zoo.cfg"), str(conf))
         writefile(os.path.join(serverdir, "data", "myid"), str(sid))
 
-    writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist}])))
+    writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist, 'trace' : options.trace}])))
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
     writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
     writescript("cli.sh", str(cli()))

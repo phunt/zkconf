@@ -32,30 +32,37 @@ h2. Usage
 <pre>
 Usage: zkconf.py [options] zookeeper_dir output_dir
 
-Options:
+positional arguments:
+  zookeeper_dir         ZooKeeper distribution directory
+  output_dir            Output directory of generated files
+
+optional arguments:
   -h, --help            show this help message and exit
-  -c COUNT, --count=COUNT
+  -c COUNT, --count COUNT
                         ensemble size (default 3)
-  --servers=SERVERS     explicit list of comma separated server names
+  --servers SERVERS     explicit list of comma separated server names
                         (alternative to --count)
-  --clientportstart=CLIENTPORTSTART
+  --clientportstart CLIENTPORTSTART
                         first client port (default 2181)
-  --quorumportstart=QUORUMPORTSTART
+  --quorumportstart QUORUMPORTSTART
                         first quorum port (default 3181)
-  --electionportstart=ELECTIONPORTSTART
+  --electionportstart ELECTIONPORTSTART
                         first election port (default 4181)
-  --weights=WEIGHTS     comma separated list of weights for each server (flex
+  --weights WEIGHTS     comma separated list of weights for each server (flex
                         quorum only, default off)
-  --groups=GROUPS       comma separated list of groups (flex quorum only,
+  --groups GROUPS       comma separated list of groups (flex quorum only,
                         default off)
-  --maxClientCnxns=MAXCLIENTCNXNS
+  --maxClientCnxns MAXCLIENTCNXNS
                         maxClientCnxns of server config (default unspecified,
                         ZK default)
-  --electionAlg=ELECTIONALG
+  --electionAlg ELECTIONALG
                         electionAlg of server config (default unspecified, ZK
                         default - FLE)
-  --username=USERNAME   SSH username to login to servers for generating remote
+  --username USERNAME   SSH username to login to servers for generating remote
                         deployment scripts
+  --trace               Enable trace level logging to separate log file
+  --ssl                 Enable SSL support (both client-server and server-
+                        server)
 </pre>
 
 Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the jars/confs from this directory into the output_dir to make your life easier). And output_dir is the directory to which we will output the generated files (assumption is that this is a non-existent directory - ie zkconf will create it)
@@ -90,3 +97,9 @@ Argument username is optional, root will be used by default if it's missing. The
 * stopcat.sh - stop ensemble remotely
 
 Status can be checked with the same script that was mentioned in the previous section.
+
+h2. SSL
+
+SSL support can be enabled by adding --ssl argument to the command line. This will turn on both client-server and server-server SSL support and disable non-SSL connections.
+You might want to take a look at zoocfg.tmpl template file before using this and make sure keystore/truststore location is correct and password is defined.
+

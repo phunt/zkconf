@@ -2,7 +2,11 @@
 
 #for $sid, $servername, $clientport, $port1, $port2 in $serverlist
 if [ ! -f ./$servername:$clientport/zookeeper_server.pid ] ; then
+#if $trace
+	java \$ZKCONF_START_ZKOPTS -Dzookeeper.root.logger=TRACE,CONSOLE,TRACEFILE -Dzookeeper.log.dir=./$servername:$clientport -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &	
+#else
 	java \$ZKCONF_START_ZKOPTS -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &
+#end if
 	echo -n $! > ./$servername:$clientport/zookeeper_server.pid
 else
 	PID=`cat ./$servername:$clientport/zookeeper_server.pid`

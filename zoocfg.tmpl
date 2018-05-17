@@ -2,7 +2,24 @@ tickTime=2000
 initLimit=10
 syncLimit=5
 dataDir=./$servername:$clientPort/data
+
+#if $ssl
+secureClientPort=$clientPort
+clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty
+ssl.keyStore.location=[keyStore_location]
+ssl.keyStore.password=[password]
+ssl.trustStore.location=[trustStore location]
+ssl.trustStore.password=[password]
+
+sslQuorum=true
+serverCnxnFactory=org.apache.zookeeper.server.NettyServerCnxnFactory
+ssl.quorum.keyStore.location=[keyStore_location]
+ssl.quorum.keyStore.password=[password]
+ssl.quorum.trustStore.location=[trustStore_location]
+ssl.quorum.trustStore.password=[password]
+#else
 clientPort=$clientPort
+#end if
 
 #if $maxClientCnxns != 10
 maxClientCnxns=$maxClientCnxns
