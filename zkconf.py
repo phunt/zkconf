@@ -153,10 +153,10 @@ if __name__ == '__main__':
     writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist, 'trace' : options.trace}])))
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
     writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
-    writescript("cli.sh", str(cli()))
+    writescript("cli.sh", str(cli(searchList=[{'ssl' : options.ssl}])))
     if is_remote:
         writescript("copycat.sh", str(copycat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
-        writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
+        writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username, 'trace' : options.trace}])))
         writescript("stopcat.sh", str(stopcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
         writescript("clearcat.sh", str(clearcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
 

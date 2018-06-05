@@ -101,5 +101,6 @@ Status can be checked with the same script that was mentioned in the previous se
 h2. SSL
 
 SSL support can be enabled by adding --ssl argument to the command line. This will turn on both client-server and server-server SSL support and disable non-SSL connections.
-You might want to take a look at zoocfg.tmpl template file before using this and make sure keystore/truststore location is correct and password is defined.
+
+You might also want to take a look at zoocfg.tmpl template file before the Cheetah compile and make sure keystore/truststore location is correct and password is defined.
 

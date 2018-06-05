@@ -7,4 +7,13 @@ else
    echo "Server(s) not specified, using \${SERVER_LIST}"
 fi
 
-java -cp ./*:. org.apache.zookeeper.ZooKeeperMain -server "\${SERVER_LIST}"
+java -cp ./*:. \
+#if $ssl
+        -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty \
+        -Dzookeeper.client.secure=true \
+        -Dzookeeper.ssl.keyStore.location=[keystore location] \
+        -Dzookeeper.ssl.keyStore.password=[keystore password] \
+        -Dzookeeper.ssl.trustStore.location=[truststore location] \
+        -Dzookeeper.ssl.trustStore.password=[truststore password] \
+#end if
+        org.apache.zookeeper.ZooKeeperMain -server "\${SERVER_LIST}"
