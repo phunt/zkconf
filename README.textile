@@ -104,3 +104,14 @@ SSL support can be enabled by adding --ssl argument to the command line. This wi
 
 You might also want to take a look at zoocfg.tmpl template file before the Cheetah compile and make sure keystore/truststore location is correct and password is defined.
 
+Generate self-signed certificate
+
+bq. keytool -genkeypair -alias $(hostname -f) -keyalg RSA -keysize 2048 -dname "cn=$(hostname -f)" -keypass password -keystore keystore.jks -storepass password
+
+Export certificate from keystore
+
+bq. keytool -exportcert -alias $(hostname -f) -keystore keystore.jks -file $(hostname -f).cer -rfc
+
+Import certiciate to truststore
+
+bq. keytool -importcert -file Andors-MacBook-Pro.local.cer -keystore truststore.jks
