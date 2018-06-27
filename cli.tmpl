@@ -7,13 +7,20 @@ else
    echo "Server(s) not specified, using \${SERVER_LIST}"
 fi
 
-java -cp ./*:. \
+CLIENT_JVMFLAGS=""
+#if $sasl
+CLIENT_JVMFLAGS="\${CLIENT_JVMFLAGS} -Djava.security.auth.login.config=/path/to/client.conf"
+#end if
 #if $ssl
+CLIENT_JVMFLAGS="\${CLIENT_JVMFLAGS} \
         -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty \
         -Dzookeeper.client.secure=true \
-        -Dzookeeper.ssl.keyStore.location=[keystore location] \
-        -Dzookeeper.ssl.keyStore.password=[keystore password] \
-        -Dzookeeper.ssl.trustStore.location=[truststore location] \
-        -Dzookeeper.ssl.trustStore.password=[truststore password] \
+        -Dzookeeper.ssl.keyStore.location=/path/to/keystore.jks \
+        -Dzookeeper.ssl.keyStore.password=password \
+        -Dzookeeper.ssl.trustStore.location=/path/to/truststore.jks \
+        -Dzookeeper.ssl.trustStore.password=password"
 #end if
+
+java -cp ./*:. \
+        \$CLIENT_JVMFLAGS \
         org.apache.zookeeper.ZooKeeperMain -server "\${SERVER_LIST}"

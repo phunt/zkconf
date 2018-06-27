@@ -65,6 +65,8 @@ parser.add_argument("--trace", dest="trace", action="store_true",
                   help="Enable trace level logging to separate log file")
 parser.add_argument("--ssl", dest="ssl", action="store_true",
                   help="Enable SSL support (both client-server and server-server)")
+parser.add_argument("--sasl", dest="sasl", action="store_true",
+                  help="Enable SASL support in client and server")
 
 options = parser.parse_args()
 
@@ -146,17 +148,18 @@ if __name__ == '__main__':
                                    'serverlist' : serverlist,
                                    'maxClientCnxns' : options.maxclientcnxns,
                                    'electionAlg' : options.electionalg,
-                                   'ssl' : options.ssl}])
+                                   'ssl' : options.ssl,
+                                   'sasl' : options.sasl}])
         writefile(os.path.join(serverdir, "zoo.cfg"), str(conf))
         writefile(os.path.join(serverdir, "data", "myid"), str(sid))
 
-    writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist, 'trace' : options.trace}])))
+    writescript("start.sh", str(start(searchList=[{'serverlist' : serverlist, 'trace' : options.trace, 'sasl' : options.sasl}])))
     writescript("stop.sh", str(stop(searchList=[{'serverlist' : serverlist}])))
     writescript("status.sh", str(status(searchList=[{'serverlist' : serverlist}])))
-    writescript("cli.sh", str(cli(searchList=[{'ssl' : options.ssl}])))
+    writescript("cli.sh", str(cli(searchList=[{'ssl' : options.ssl, 'sasl' : options.sasl}])))
     if is_remote:
         writescript("copycat.sh", str(copycat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
-        writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username, 'trace' : options.trace}])))
+        writescript("startcat.sh", str(startcat(searchList=[{'serverlist' : serverlist, 'username' : options.username, 'trace' : options.trace, 'sasl' : options.sasl}])))
         writescript("stopcat.sh", str(stopcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
         writescript("clearcat.sh", str(clearcat(searchList=[{'serverlist' : serverlist, 'username' : options.username}])))
 

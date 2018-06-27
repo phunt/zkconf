@@ -4,11 +4,14 @@
 ssh $username@$servername <<ENDSSH
 cd zookeeper
 if [ ! -f ./$servername:$clientport/zookeeper_server.pid ] ; then
-#if $trace
-    java \$ZKCONF_START_ZKOPTS -Dzookeeper.root.logger=TRACE,CONSOLE,TRACEFILE -Dzookeeper.log.dir=./$servername:$clientport -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &
-#else
-    java \$ZKCONF_START_ZKOPTS -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &
+SERVER_JVMFLAGS=""
+#if $sasl
+SERVER_JVMFLAGS="\${SERVER_JVMFLAGS} -Djava.security.auth.login.config=/path/to/server/jaas/file.conf"
 #end if
+#if $trace
+SERVER_JVMFLAGS="\${SERVER_JVMFLAGS} -Dzookeeper.root.logger=TRACE,CONSOLE,TRACEFILE -Dzookeeper.log.dir=./$servername:$clientport"
+#end if
+    java \$ZKCONF_START_ZKOPTS \$SERVER_JVMFLAGS -cp ./*:. org.apache.zookeeper.server.quorum.QuorumPeerMain ./$servername:$clientport/zoo.cfg > ./$servername:$clientport/zoo.log 2>&1 &
     echo -n \\$! > ./$servername:$clientport/zookeeper_server.pid
 else
     PID="\\$(cat ./$servername:$clientport/zookeeper_server.pid)"
