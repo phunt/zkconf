@@ -50,6 +50,10 @@ parser.add_option("", "--maxClientCnxns", dest="maxclientcnxns", type='int',
                   default=10, help="maxClientCnxns of server config (default unspecified, ZK default)")
 parser.add_option("", "--electionAlg", dest="electionalg", type='int',
                   default=3, help="electionAlg of server config (default unspecified, ZK default - FLE)")
+parser.add_option("", "--4lwWhitelist", dest="whitelist", type='string',
+                  default="", help="override the ZooKeeper default whitelist")
+parser.add_option("", "--4lwWhitelistAll", dest="whitelistAll",
+                  default=False, help="whitelist all the 4lw")
 
 (options, args) = parser.parse_args()
 
@@ -131,7 +135,9 @@ if __name__ == '__main__':
                                    'groups' : options.groups,
                                    'serverlist' : serverlist,
                                    'maxClientCnxns' : options.maxclientcnxns,
-                                   'electionAlg' : options.electionalg}])
+                                   'electionAlg' : options.electionalg,
+                                   'whitelist' : options.whitelist,
+                                   'whitelistAll' : options.whitelistAll}])
         writefile(os.path.join(serverdir, "zoo.cfg"), str(conf))
         writefile(os.path.join(serverdir, "data", "myid"), str(sid))
 

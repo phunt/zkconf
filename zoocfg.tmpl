@@ -4,6 +4,15 @@ syncLimit=5
 dataDir=./$servername:$clientPort/data
 clientPort=$clientPort
 
+#if len($whitelist) > 0
+\# WARNING: remove this on production systems - TEST ONLY
+4lw.commands.whitelist=$whitelist
+#end if
+#if $whitelistAll
+\# WARNING: remove this on production systems - TEST ONLY
+4lw.commands.whitelist=*
+#end if
+
 #if $maxClientCnxns != 10
 maxClientCnxns=$maxClientCnxns
 #end if
