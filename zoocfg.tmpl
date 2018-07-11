@@ -3,6 +3,7 @@ initLimit=10
 syncLimit=5
 dataDir=./$servername:$clientPort/data
 clientPort=$clientPort
+admin.serverPort=$adminServerPort
 
 #if len($whitelist) > 0
 \# WARNING: remove this on production systems - TEST ONLY
@@ -22,12 +23,12 @@ maxClientCnxns=$maxClientCnxns
 electionAlg=$electionAlg
 #end if
 
-#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+#for $sid, $servername, $clientport, $adminserverport, $port1, $port2 in $serverlist
 server.$sid=$servername:$port1:$port2
 #end for
 
 #if len($weights) > 0
-#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+#for $sid, $servername, $clientport, $adminserverport, $port1, $port2 in $serverlist
 weight.$sid=$weights[$sid - 1]
 #end for
 #end if

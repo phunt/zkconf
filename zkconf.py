@@ -42,6 +42,8 @@ parser.add_option("", "--quorumportstart", dest="quorumportstart", type="int",
                   default=3181, help="first quorum port (default 3181)")
 parser.add_option("", "--electionportstart", dest="electionportstart", type="int",
                   default=4181, help="first election port (default 4181)")
+parser.add_option("", "--adminportstart", dest="adminportstart", type="int",
+                  default=8081, help="first admin (jetty) port (default 8081)")
 parser.add_option("", "--weights", dest="weights",
                   default="1", help="comma separated list of weights for each server (flex quorum only, default off)")
 parser.add_option("", "--groups", dest="groups",
@@ -60,12 +62,14 @@ parser.add_option("", "--4lwWhitelistAll", dest="whitelistAll",
 options.clientports = []
 options.quorumports = []
 options.electionports = []
+options.adminports = []
 if options.servers != "localhost" :
     options.servers = options.servers.split(",")
     for i in xrange(1, len(options.servers) + 1) :
         options.clientports.append(options.clientportstart);
         options.quorumports.append(options.quorumportstart);
         options.electionports.append(options.electionportstart);
+        options.adminports.append(options.adminportstart);
 else :
     options.servers = []
     for i in xrange(options.count) :
@@ -73,6 +77,7 @@ else :
         options.clientports.append(options.clientportstart + i);
         options.quorumports.append(options.quorumportstart + i);
         options.electionports.append(options.electionportstart + i);
+        options.adminports.append(options.adminportstart + i);
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")
@@ -119,6 +124,7 @@ if __name__ == '__main__':
         serverlist.append([sid,
                            options.servers[sid - 1],
                            options.clientports[sid - 1],
+                           options.adminports[sid - 1],
                            options.quorumports[sid - 1],
                            options.electionports[sid - 1]])
 
@@ -131,6 +137,8 @@ if __name__ == '__main__':
                                    'servername' : options.servers[sid - 1],
                                    'clientPort' :
                                        options.clientports[sid - 1],
+                                   'adminServerPort' :
+                                       options.adminports[sid - 1],
                                    'weights' : options.weights,
                                    'groups' : options.groups,
                                    'serverlist' : serverlist,
