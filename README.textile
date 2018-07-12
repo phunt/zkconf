@@ -48,6 +48,8 @@ optional arguments:
                         first quorum port (default 3181)
   --electionportstart ELECTIONPORTSTART
                         first election port (default 4181)
+  --adminportstart ADMINPORTSTART
+                        first admin (jetty - added ZK 3.5) port (default 8081)
   --weights WEIGHTS     comma separated list of weights for each server (flex
                         quorum only, default off)
   --groups GROUPS       comma separated list of groups (flex quorum only,
@@ -63,6 +65,8 @@ optional arguments:
   --trace               Enable trace level logging to separate log file
   --ssl                 Enable SSL support (both client-server and server-
                         server)
+  --4lwWhitelist CMDS   Enable the specific 4lw commands
+  --4lwWhitelistAll     Enable all 4lw
 </pre>
 
 Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the jars/confs from this directory into the output_dir to make your life easier). And output_dir is the directory to which we will output the generated files (assumption is that this is a non-existent directory - ie zkconf will create it)
