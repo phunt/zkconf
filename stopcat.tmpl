@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#for $sid, $servername, $clientport, $port1, $port2 in $serverlist
+ssh $username@$servername <<ENDSSH
+cd zookeeper
+PIDFILE=./$servername:$clientport/zookeeper_server.pid
+if [ -e "\\$PIDFILE" ]
+then
+    kill -9 \\$(cat \\$PIDFILE)
+    rm \\$PIDFILE
+else
+    echo "Missing \\$PIDFILE, not stopping respective server"
+fi
+ENDSSH
+
+#end for

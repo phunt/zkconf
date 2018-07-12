@@ -5,3 +5,8 @@ start.py
 status.py
 stop.py
 zoocfg.py
+copycat.py
+startcat.py
+stopcat.py
+clearcat.py
+
