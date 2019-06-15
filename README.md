@@ -1,33 +1,35 @@
-h1. Generate configuration for ZooKeeper ensemble
+# Generate configuration for Apache ZooKeeper ensemble
 
-*Author: "Patrick Hunt":http://people.apache.org/~phunt/* (follow me on "twitter":http://twitter.com/phunt)
+**Author: [Patrick Hunt](http://people.apache.org/~phunt/)** (follow me on [twitter](http://twitter.com/phunt))
 
-h2. Summary
+## Summary
 
-"This project":http://github.com/phunt/zkconf will generate all of the configuration needed to run a "ZooKeeper ensemble":http://hadoop.apache.org/zookeeper/. I mainly use this tool for localhost based testing, but it can generate configurations for any list of servers (see the --server option).
+[This project](http://github.com/phunt/zkconf) will generate all of the configuration needed to run a [ZooKeeper ensemble](http://hadoop.apache.org/zookeeper/) I mainly use this tool for localhost based testing, but it can generate configurations for any list of servers (see the --server option).
 
-h3. What's Apache ZooKeeper?
+### What is Apache ZooKeeper
 
-From the "official site":http://hadoop.apache.org/zookeeper/: "ZooKeeper is a high-performance coordination service for distributed applications."
+From the [official site](http://hadoop.apache.org/zookeeper/) "ZooKeeper is a high-performance coordination service for distributed applications."
 
-It exposes common services - such as naming, configuration management, synchronization, and group services - in a simple interface so you don't have to write them from scratch. You can use it off-the-shelf to implement consensus, group management, leader election, and presence protocols. And you can build on it for your own, specific needs. 
+It exposes common services - such as naming, configuration management, synchronization, and group services - in a simple interface so you don't have to write them from scratch. You can use it off-the-shelf to implement consensus, group management, leader election, and presence protocols. And you can build on it for your own, specific needs.
 
-h2. License
+## License
 
 This project is licensed under the Apache License Version 2.0
 
-h2. Requirements
+## Requirements
 
-* Python
-* "Cheetah":http://www.cheetahtemplate.org templating package are necessary to run this
-** On ubuntu "sudo apt-get install python-cheetah"
-* Bash
+- Python
+- [Cheetah](http://www.cheetahtemplate.org) templating package are necessary to run this
+  \*\* On ubuntu "sudo apt-get install python-cheetah"
+- Bash
 
 before using the first time (or on update) run the following command
 
-cheetah compile *.tmpl
+```bash
+cheetah compile \*.tmpl
+```
 
-h2. Usage
+## Usage
 
 <pre>
 Usage: zkconf.py [options] zookeeper_dir output_dir
@@ -73,36 +75,44 @@ Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the j
 
 example of typical use; 9 server quorum:
 
-bq. zkconf.py --count 9 ~/zookeeper_trunk test9servers
+```bash
+zkconf.py --count 9 ~/zookeeper_trunk test9servers
+```
 
-bq. zkconf.py --servers "host1.com,host2.com,168.1.1.1" ~/zookeeper_trunk test3servers
+```bash
+zkconf.py --servers "host1.com,host2.com,168.1.1.1" ~/zookeeper_trunk test3servers
+```
 
 example of using weights/groups (only for flex quorum, not typical); 9 servers with 3 groups
 
-bq. zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk testflexquroum
+```bash
+zkconf.py -c 9 --weights="1,1,1,1,1,0,0,0,0" --groups="1:2:3:4:5,6:7,8:9" ~/dev/workspace/gitzk testflexquroum
+```
 
 Running localhost (default) starts client:quorum:election ports as 2181:3181:4181 respectively. Running non-localhost (--servers) starts client:quorum:elections ports for all hosts as 2181:3181:4181.
 
-* cli.sh "server:port,server:port,..." - open a client to the server list
-* status.sh - status of each of the servers (prints leader | follower if active)
-* start.sh - start the ensemble (logs are output to the respective server subdir, localhost only)
-* stop.sh - stop the ensemble (localhost only)
+- cli.sh "server:port,server:port,..." - open a client to the server list
+- status.sh - status of each of the servers (prints leader | follower if active)
+- start.sh - start the ensemble (logs are output to the respective server subdir, localhost only)
+- stop.sh - stop the ensemble (localhost only)
 
-h2. Running remotely
+## Running remotely
 
-If servers are listed in the command line, zkconf will generate shell scripts which help you to upload ZooKeeper files and start/stop ensemble remotely. For instance, you want to start a "real" ensemble running on separate machines / VMs. 
+If servers are listed in the command line, zkconf will generate shell scripts which help you to upload ZooKeeper files and start/stop ensemble remotely. For instance, you want to start a "real" ensemble running on separate machines / VMs.
 
-bq. zkconf.py --servers "host1.com,host2.com,168.1.1.1" --username foobar ~/zookeeper_trunk test3servers
+```bash
+zkconf.py --servers "host1.com,host2.com,168.1.1.1" --username foobar ~/zookeeper_trunk test3servers
+```
 
 Argument username is optional, root will be used by default if it's missing. The following scripts will be available:
 
-* copycat.sh - transfer the files to remote servers
-* startcat.sh - start ensemble remotely
-* stopcat.sh - stop ensemble remotely
+- copycat.sh - transfer the files to remote servers
+- startcat.sh - start ensemble remotely
+- stopcat.sh - stop ensemble remotely
 
 Status can be checked with the same script that was mentioned in the previous section.
 
-h2. SSL
+## SSL
 
 SSL support can be enabled by adding --ssl argument to the command line. This will turn on both client-server and server-server SSL support and disable non-SSL connections.
 
@@ -110,12 +120,18 @@ You might also want to take a look at zoocfg.tmpl template file before the Cheet
 
 Generate self-signed certificate
 
-bq. keytool -genkeypair -alias $(hostname -f) -keyalg RSA -keysize 2048 -dname "cn=$(hostname -f)" -keypass password -keystore keystore.jks -storepass password
+```bash
+keytool -genkeypair -alias $(hostname -f) -keyalg RSA -keysize 2048 -dname "cn=$(hostname -f)" -keypass password -keystore keystore.jks -storepass password
+```
 
 Export certificate from keystore
 
-bq. keytool -exportcert -alias $(hostname -f) -keystore keystore.jks -file $(hostname -f).cer -rfc
+```bash
+keytool -exportcert -alias $(hostname -f) -keystore keystore.jks -file $(hostname -f).cer -rfc
+```
 
 Import certiciate to truststore
 
-bq. keytool -importcert -file Andors-MacBook-Pro.local.cer -keystore truststore.jks
+```bash
+keytool -importcert -file Andors-MacBook-Pro.local.cer -keystore truststore.jks
+```
