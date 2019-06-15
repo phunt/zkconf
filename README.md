@@ -32,7 +32,18 @@ cheetah compile \*.tmpl
 ## Usage
 
 <pre>
-Usage: zkconf.py [options] zookeeper_dir output_dir
+usage: zkconf.py [-h] [-c COUNT] [--servers SERVERS]
+                 [--clientportstart CLIENTPORTSTART]
+                 [--quorumportstart QUORUMPORTSTART]
+                 [--electionportstart ELECTIONPORTSTART]
+                 [--adminportstart ADMINPORTSTART] [--weights WEIGHTS]
+                 [--groups GROUPS] [--maxClientCnxns MAXCLIENTCNXNS]
+                 [--electionAlg ELECTIONALG] [--username USERNAME] [--trace]
+                 [--ssl] [--sasl] [--4lwWhitelist WHITELIST]
+                 [--4lwWhitelistAll]
+                 zookeeper_dir output_dir
+
+ZooKeeper ensemble config generator
 
 positional arguments:
   zookeeper_dir         ZooKeeper distribution directory
@@ -51,7 +62,7 @@ optional arguments:
   --electionportstart ELECTIONPORTSTART
                         first election port (default 4181)
   --adminportstart ADMINPORTSTART
-                        first admin (jetty - added ZK 3.5) port (default 8081)
+                        first admin (jetty) port (default 8081)
   --weights WEIGHTS     comma separated list of weights for each server (flex
                         quorum only, default off)
   --groups GROUPS       comma separated list of groups (flex quorum only,
@@ -67,8 +78,10 @@ optional arguments:
   --trace               Enable trace level logging to separate log file
   --ssl                 Enable SSL support (both client-server and server-
                         server)
-  --4lwWhitelist CMDS   Enable the specific 4lw commands
-  --4lwWhitelistAll     Enable all 4lw
+  --sasl                Enable SASL support in client and server
+  --4lwWhitelist WHITELIST
+                        override the ZooKeeper default whitelist
+  --4lwWhitelistAll     whitelist all the 4lw
 </pre>
 
 Where zookeeper_dir is the location of your ZooKeeper trunk (zkconf copies the jars/confs from this directory into the output_dir to make your life easier). And output_dir is the directory to which we will output the generated files (assumption is that this is a non-existent directory - ie zkconf will create it)
