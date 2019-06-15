@@ -187,5 +187,9 @@ if __name__ == '__main__':
         shutil.copy(f, options.output_dir)
     for f in glob.glob(os.path.join(options.zookeeper_dir, 'build', '*.jar')):
         shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'zookeeper-server', 'target', '*.jar')):
+        shutil.copy(f, options.output_dir)
+    for f in glob.glob(os.path.join(options.zookeeper_dir, 'zookeeper-server', 'target', 'lib', '*.jar')):
+        shutil.copy(f, options.output_dir)
 
     shutil.copyfile(os.path.join(options.zookeeper_dir, "conf", "log4j.properties"), os.path.join(options.output_dir, "log4j.properties"))
