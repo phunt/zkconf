@@ -1,14 +1,14 @@
 # Generate configuration for Apache ZooKeeper ensemble
 
-**Author: [Patrick Hunt](http://people.apache.org/~phunt/)** (follow me on [twitter](http://twitter.com/phunt))
+**Author: [Patrick Hunt](https://people.apache.org/~phunt/)** (follow me on [twitter](https://twitter.com/phunt))
 
 ## Summary
 
-[This project](http://github.com/phunt/zkconf) will generate all of the configuration needed to run a [ZooKeeper ensemble](http://hadoop.apache.org/zookeeper/) I mainly use this tool for localhost based testing, but it can generate configurations for any list of servers (see the --server option).
+[This project](https://github.com/phunt/zkconf) will generate all of the configuration needed to run a [ZooKeeper ensemble](https://zookeeper.apache.org) I mainly use this tool for localhost based testing, but it can generate configurations for any list of servers (see the --server option).
 
 ### What is Apache ZooKeeper
 
-From the [official site](http://hadoop.apache.org/zookeeper/) "ZooKeeper is a high-performance coordination service for distributed applications."
+From the [official site](https://zookeeper.apache.org) "ZooKeeper is a high-performance coordination service for distributed applications."
 
 It exposes common services - such as naming, configuration management, synchronization, and group services - in a simple interface so you don't have to write them from scratch. You can use it off-the-shelf to implement consensus, group management, leader election, and presence protocols. And you can build on it for your own, specific needs.
 
