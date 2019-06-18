@@ -84,19 +84,19 @@ options.adminports = []
 if options.servers != "localhost" :
     is_remote = True
     options.servers = options.servers.split(",")
-    for i in xrange(1, len(options.servers) + 1) :
+    for i in range(1, len(options.servers) + 1) :
         options.clientports.append(options.clientportstart)
         options.quorumports.append(options.quorumportstart)
         options.electionports.append(options.electionportstart)
         options.adminports.append(options.adminportstart)
 else :
     options.servers = []
-    for i in xrange(options.count) :
+    for i in range(options.count) :
         options.servers.append(socket.gethostname())
         options.clientports.append(options.clientportstart + i)
         options.quorumports.append(options.quorumportstart + i)
         options.electionports.append(options.electionportstart + i)
-        options.adminports.append(options.adminportstart + i);
+        options.adminports.append(options.adminportstart + i)
 
 if options.weights != "1" :
     options.weights = options.weights.split(",")
@@ -116,7 +116,7 @@ def writefile(p, content):
 def writescript(name, content):
     p = os.path.join(options.output_dir, name)
     writefile(p, content)
-    os.chmod(p, 0755)
+    os.chmod(p, 0o755)
 
 def copyjar(optional, srcs, jar, dstpath, dst):
     for src in srcs:
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     os.mkdir(options.output_dir)
 
     serverlist = []
-    for sid in xrange(1, len(options.servers) + 1) :
+    for sid in range(1, len(options.servers) + 1) :
         serverlist.append([sid,
                            options.servers[sid - 1],
                            options.clientports[sid - 1],
@@ -144,7 +144,7 @@ if __name__ == '__main__':
                            options.quorumports[sid - 1],
                            options.electionports[sid - 1]])
 
-    for sid in xrange(1, len(options.servers) + 1) :
+    for sid in range(1, len(options.servers) + 1) :
         serverdir = os.path.join(options.output_dir, options.servers[sid - 1] +
                                  ":" + str(options.clientports[sid - 1]))
         os.mkdir(serverdir)
