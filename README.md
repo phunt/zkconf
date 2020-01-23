@@ -161,3 +161,13 @@ Import certiciate to truststore
 ```bash
 keytool -importcert -file Andors-MacBook-Pro.local.cer -keystore truststore.jks
 ```
+
+## Troubleshooting
+
+It's possible to overload a machine when running lots of ZK ensemble members - if you run into an error such as "NoRouteToHostException: No valid address" you may need to update the ICMP rate limit which isset to 250 by default. You can turn this off using the following command:
+
+```bash
+sudo sysctl -wnet.inet.icmp.icmplim=0
+```
+
+(see also https://krypted.com/mac-os-x/disable-icmp-rate-limiting-os-x/)
