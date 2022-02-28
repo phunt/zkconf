@@ -18,28 +18,17 @@ This project is licensed under the Apache License Version 2.0
 
 ## Requirements
 
-- Python 2 and 3 are supported.
-- Cheetah - see below
-
-### Requirements - Cheetah Python 2
-
-- [Cheetah](http://www.cheetahtemplate.org) templating package are necessary to run this
-  \*\* On ubuntu "sudo apt-get install python-cheetah" or "pip install cheetah"
-
-before using the first time (or on update) run the following command
-
-```bash
-cheetah compile \*.tmpl
-```
+- Python 3 is supported. (see "python2" git repo branch if you need python2 support)
+- Cheetah version 3 - see below
 
 ### Requirements - Cheetah Python 3
 
 - Cheetah has been forked to support python 3 - "pip install cheetah3"
 
-before using the first time (or on update) run the following command
+before using the first time (or on update) run the following command. You may or may not need to use the shbang option depending upon how your python environment is setup:
 
 ```bash
-cheetah compile \*.tmpl # you may need to prefix with "python3" if not the default
+cheetah-compile --shbang='#!/usr/bin/env python3' *.tmpl
 ```
 
 ## Usage

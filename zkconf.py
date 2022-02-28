@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -192,4 +192,13 @@ if __name__ == '__main__':
     for f in glob.glob(os.path.join(options.zookeeper_dir, 'zookeeper-server', 'target', 'lib', '*.jar')):
         shutil.copy(f, options.output_dir)
 
-    shutil.copyfile(os.path.join(options.zookeeper_dir, "conf", "log4j.properties"), os.path.join(options.output_dir, "log4j.properties"))
+    # ZK 3.8.0 added logback as the default, handle both cases...
+    log4jprop_file = os.path.join(options.zookeeper_dir, "conf", "log4j.properties")
+    logback_file = os.path.join(options.zookeeper_dir, "conf", "logback.xml")
+    if os.path.isfile(log4jprop_file):
+        shutil.copyfile(log4jprop_file, os.path.join(options.output_dir, "log4j.properties"))
+    elif os.path.isfile(logback_file):
+        shutil.copyfile(logback_file, os.path.join(options.output_dir, "logback.xml"))
+    else:
+        # Handle the case where neither file is found...
+        raise Exception("Unable to find logging configuration - log4j.properties or logback.xml missing")
